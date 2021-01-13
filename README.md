@@ -38,3 +38,28 @@ persist(order)
 // 원래는 이렇게 해야 하는데 Cascade를 사용하면
 persist(order) 만 하면 된다.
 ```
+
+### em.persist 할 때...
+영속성 컨텍스트에는 키와 밸류가 있는데 persist할 때의 key가
+저장한 해당 객체의 PK값이 된다.
+
+### Service 계층에서 JPA의 모든 데이터 변경이나 로직들은...?
+@Transactional 이 필요하다.
+그래야 Lazy 로딩 이런 것들이 되고 꼭 필요하다.
+- 참고 : 조회 쪽에서 @transactional을 쓸 때 readonly = true 옵션을 주면 최적화가 가능하다.
+
+### 중복 회원 검증 비지니스 로직에서의 주의점
+만약 중복 회원 검증을 할 때 동시에 같은 이름의 회원이 회원가입을 한다면 둘다 등록이 되어 버린다.
+따라서 실무에서는 데이터베이스의 이름에 unique 제약조건을 추가하는 것이 바람직할 것이다.  
+
+### 필드 주입, 세터 주입의 문제
+필드 주입은 변경이 일단 되지 않는다. 어떠한 경우에 변경할 사항이 있을 수 있는데 불가하다.
+그래서 세터 주입을 쓸 수 있는데, 세터 주입은 Mock같은 것들을 주입할 수 있다는 것이 장점이다. 그러나 한번 무언가 런타임에 누군가가 이걸 바꾼다면 치명적일 것이다.
+
+-> 궁극적으로 생성자 인젝션이 좋다. @RequiredArgsConstructor는 final이 붙은 것들, @AllArgsConstructor는 final 말고도 다.
+Entity 매니저 또한 스프링 부트안에서는 @Autowired로 사용가능하다.
+
+### 기능 테스트 시에 insert문이 발생안한다?
+- persist한다고 해서 DB에 insert가 안된다. db트랜잭션 commit될때 그 때 이제 flush가 되면서 db에 insert query가 나감.
+- 그런데 스프링에서 @Transactional은 기본적으로 커밋을 안하고 롤백을 해버림 그래서 @Rollback(false)를 하면 됨.
+- 만약 롤백 방식으로 하고도 쿼리를 확인하고 싶으면 EntityManager를 만들고 Em.flush()를 해주면 된다.
