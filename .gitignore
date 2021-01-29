@@ -4,6 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+src/main/resources/static/js/bootstrap.bundle.js
+src/main/resources/static/js/bootstrap.esm.js
+src/main/resources/static/js/bootstrap.js
 
 ### STS ###
 .apt_generated
